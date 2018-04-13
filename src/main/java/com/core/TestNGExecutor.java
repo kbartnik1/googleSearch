@@ -16,6 +16,9 @@ import org.testng.xml.XmlTest;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author krbk
@@ -27,7 +30,7 @@ public class TestNGExecutor {
     private List<String> methodNames = new ArrayList<>();
     List<TestNG> testNGInstances = new ArrayList<>();
 
-    public TestNGExecutor(){
+    public TestNGExecutor() {
         getTestMethodNames();
     }
 
@@ -69,20 +72,33 @@ public class TestNGExecutor {
     }
 
     public void runTests() {
-        collectTests();
-        for( final TestNG ngInstance : testNGInstances ){
-            new Thread(()->{
-             ngInstance.run();
-            }).start();
+        try {
+            collectTests();
+            ExecutorService executor = Executors.newFixedThreadPool(4);
+            for (TestNG ngInstance : testNGInstances) {
+                executor.submit(() -> {
+                    ngInstance.run();
+                });
+            }
+            executor.shutdown();
+            executor.awaitTermination(1800L, TimeUnit.SECONDS);
+            new TestNGExecutorListener().afterClass();
+        }catch(Exception ex){
+            ex.printStackTrace();
         }
     }
+
     private void getTestMethodNames() {
         Class c = TestManager.class;
         Method[] m = c.getDeclaredMethods();
         for (int i = 0; i < m.length; i++) {
-            methodNames.add(m[i].toString());
-            String tmpName = methodNames.get(i);
-            String[] tmp = tmpName.split("\\.");
+
+            if (m[i].isAnnotationPresent(org.testng.annotations.Test.class)) {
+                methodNames.add(m[i].toString());
+            }
+        }
+        for (int i = 0; i < methodNames.size(); i++) {
+            String[] tmp = methodNames.get(i).split("\\.");
             methodNames.set(i, tmp[tmp.length - 1].substring(0, tmp[tmp.length - 1].length() - 2));
         }
     }

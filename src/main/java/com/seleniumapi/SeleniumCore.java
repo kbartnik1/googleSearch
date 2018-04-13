@@ -14,7 +14,6 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -25,25 +24,29 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class SeleniumCore {
     private int counter = 0;
-    public boolean remote = true;
     private static final Logger log = Logger.getLogger(SeleniumCore.class);
     protected WebDriver driver;
 
-    public SeleniumCore() throws MalformedURLException {
-        if (!remote) {
-            System.setProperty("webdriver.gecko.driver", "src\\main\\resources\\geckodriver.exe");
-            this.driver = new FirefoxDriver();
-            this.driver.manage().window().maximize();
-        } else {
-            FirefoxOptions cap = new FirefoxOptions();
-            cap.setCapability("version", "");
-            cap.setCapability("platform", "LINUX");
-            this.driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), cap);
+    public SeleniumCore() {
+        try {
+            if (System.getProperty("mode.remote").equals("false")) {
+                driver = new FirefoxDriver();
+                driver.manage().window().maximize();
+            } else {
+                FirefoxOptions cap = new FirefoxOptions();
+                cap.setCapability("version", System.getProperty("remote.browserVersion"));
+                cap.setCapability("platform", System.getProperty("remote.platform"));
+                cap.setCapability("browserName", System.getProperty("remote.browserName"));
+                String s = System.getProperty("remote.URL");
+                driver = new RemoteWebDriver(new URL(s), cap);
+            }
+            driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-        driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
     }
 
-        public void goToPage(String url) {
+    public void goToPage(String url) {
         log.info("Going to page: " + url);
         driver.get(url);
     }
@@ -70,7 +73,7 @@ public abstract class SeleniumCore {
         do {
             counter++;
             try {
-                log.debug("Waiting 1 second before checking for " + vLocator + " object on page");
+                log.debug("Checking for " + vLocator + " object on page");
                 Thread.sleep(1000);
                 if (!driver.findElements(vLocator).isEmpty()) {
                     log.info("Object " + vLocator + " is present on page");
@@ -96,5 +99,9 @@ public abstract class SeleniumCore {
     protected abstract void searchOnPage(String searchString);
 
     protected abstract void goToHomePage();
+
+    public void closeDriverConnection() {
+        log.warn("Warning ! Closing driver's connection...");
+        driver.quit();
+    }
 }
-;

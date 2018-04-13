@@ -1,4 +1,6 @@
 /target/*
 /test-output/*
 /logs/*
-workspace.xml
+.log
+.idea/
+

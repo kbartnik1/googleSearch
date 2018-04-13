@@ -5,14 +5,12 @@
  */
 package com.core;
 
+import com.utils.Config;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
+import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -22,16 +20,58 @@ public class Main {
 
     private static final Logger log = Logger.getLogger(Main.class);
 
-
-    public static void main(String[] args){
+    public static void main(String[] args) throws InterruptedException {
         try {
-            PropertyConfigurator.configure(new FileInputStream("src\\main\\resources\\log4j.properties"));
-            log.info("Property files located and loaded");
-        } catch (FileNotFoundException ex) {
-            log.error("Property files not found. " + ex.getMessage());
+            Config.addPropertiesConfigurator(new FileInputStream("src\\main\\resources\\log4j.properties"));
+            Config.addProperties(new FileInputStream("src\\main\\resources\\config.properties"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (System.getProperty("mode.remote").equals("true")) {
+            try {
+                runDockerCompose(checkNumberOfServicesToRunInDocker());
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
         }
         TestNGExecutor testNGExecutor = new TestNGExecutor();
         testNGExecutor.runTests();
     }
 
+    private static void runDockerCompose(int servicesToStart) {
+        try {
+            log.info("Starting docker services...");
+            int quitCondition = 0;
+            ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/c", "docker-compose -f " + System.getProperty("docker.yml.file.location") + System.getProperty("docker.yml.file.name") + " up -d");
+            pb.redirectErrorStream(true);
+            Process p = pb.start();
+            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line;
+            while (quitCondition != servicesToStart) {
+                line = r.readLine();
+                if (line.contains("done")) {
+                    quitCondition++;
+                    if (quitCondition == servicesToStart) {
+                        log.info(servicesToStart + " Docker service(s) have been started!");
+                        Thread.sleep(3000);
+                        p.destroy();
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private static int checkNumberOfServicesToRunInDocker() throws FileNotFoundException {
+        int lines = 0;
+        File f = new File(System.getProperty("docker.yml.file.location") + System.getProperty("docker.yml.file.name"));
+        Scanner scanner = new Scanner(f);
+        while (scanner.hasNext()) {
+            String s = scanner.nextLine();
+            if (s.contains("image:"))
+                lines++;
+        }
+        return lines;
+    }
 }
