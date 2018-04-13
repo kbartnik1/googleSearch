@@ -31,15 +31,12 @@ public class GoogleCore extends SeleniumCore {
 
     private static final Logger log = Logger.getLogger(GoogleCore.class);
 
-    public GoogleCore() throws MalformedURLException {
-        super();
-    }
-
     @Override
     public void searchOnPage(String searchString) {
         sendText(GOOGLE_SEARCH_BOX, searchString);
         sendKey(GOOGLE_SEARCH_BOX, Keys.RETURN);
     }
+
 
     @Override
     public void goToHomePage() {
