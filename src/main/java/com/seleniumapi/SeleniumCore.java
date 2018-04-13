@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class SeleniumCore {
     private int counter = 0;
-    public boolean remote = false;
+    public boolean remote = true;
     private static final Logger log = Logger.getLogger(SeleniumCore.class);
     protected WebDriver driver;
 

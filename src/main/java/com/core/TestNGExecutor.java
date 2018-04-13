@@ -13,6 +13,7 @@ import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,12 @@ public class TestNGExecutor {
 
     private static final Logger log = Logger.getLogger(TestNGExecutor.class);
     private TestNGExecutorListener listener = new TestNGExecutorListener();
+    private List<String> methodNames = new ArrayList<>();
     List<TestNG> testNGInstances = new ArrayList<>();
+
+    public TestNGExecutor(){
+        getTestMethodNames();
+    }
 
     private XmlSuite createXMLSuite(int testIndex) {
         XmlSuite xmlSuite = new XmlSuite();
@@ -35,12 +41,12 @@ public class TestNGExecutor {
         xmlTest.setPreserveOrder(true);
         XmlClass xmlClass = new XmlClass(TestManager.class);
         List<XmlInclude> includeMethods = new ArrayList<>();
-        includeMethods.add(new XmlInclude(Main.methodNames.get(testIndex)));
+        includeMethods.add(new XmlInclude(methodNames.get(testIndex)));
         xmlClass.setIncludedMethods(includeMethods);
         List<XmlClass> classList = new ArrayList<>();
         classList.add(xmlClass);
         xmlTest.setXmlClasses(classList);
-        Main.methodNames.remove(testIndex);
+        methodNames.remove(testIndex);
         return xmlSuite;
     }
 
@@ -48,12 +54,11 @@ public class TestNGExecutor {
         TestNG testNG;
         List<List<XmlSuite>> listOfSuiteList = new ArrayList<>();
         List<XmlSuite> suiteList;
-        while (Main.methodNames.size() != 0) {
+        while (methodNames.size() != 0) {
             suiteList = new ArrayList<>();
             suiteList.add(createXMLSuite(0));
             listOfSuiteList.add(suiteList);
         }
-        log.debug("sizes: " + listOfSuiteList.size() + " " + listOfSuiteList.get(0).get(0));
         do {
             testNG = new TestNG();
             testNG.setXmlSuites(listOfSuiteList.get(0));
@@ -63,10 +68,22 @@ public class TestNGExecutor {
         } while (listOfSuiteList.size() != 0);
     }
 
-    void runTests() {
+    public void runTests() {
         collectTests();
-        for (TestNG t : testNGInstances){
-            t.run();
+        for( final TestNG ngInstance : testNGInstances ){
+            new Thread(()->{
+             ngInstance.run();
+            }).start();
+        }
+    }
+    private void getTestMethodNames() {
+        Class c = TestManager.class;
+        Method[] m = c.getDeclaredMethods();
+        for (int i = 0; i < m.length; i++) {
+            methodNames.add(m[i].toString());
+            String tmpName = methodNames.get(i);
+            String[] tmp = tmpName.split("\\.");
+            methodNames.set(i, tmp[tmp.length - 1].substring(0, tmp[tmp.length - 1].length() - 2));
         }
     }
 }
