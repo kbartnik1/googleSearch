@@ -11,10 +11,6 @@ public class TestManager {
     Korpolaki korpolaki = new Korpolaki();
     ApiTests apiTests = new ApiTests();
 
-    public TestManager() throws MalformedURLException {
-    }
-
-
     @Test
     public void checkIfGoogleFindsAWord() {
         int r = korpolaki.checkIfWordExistsInGoogle("qetjhquhetuiqheiuthqiuehtiu");
@@ -32,6 +28,7 @@ public class TestManager {
         int r = korpolaki.checkIfWordExistsInGoogle("Polski rap");
         Assert.assertTrue(r == 1);
     }
+
     @Test
     public void checkIfBrowserOpens6times() {
         Assert.assertTrue(apiTests.checkMSISDNLength(), " it really is 9 chars long");

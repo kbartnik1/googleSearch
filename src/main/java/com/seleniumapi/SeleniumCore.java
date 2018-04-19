@@ -14,6 +14,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class SeleniumCore {
     private int counter = 0;
+    private final int MAX_TRIES = 2;
     private static final Logger log = Logger.getLogger(SeleniumCore.class);
     protected WebDriver driver;
 
@@ -71,7 +73,6 @@ public abstract class SeleniumCore {
     public boolean checkIfAndWaitUntilElementExists(By vLocator) {
         counter = 0;
         do {
-            counter++;
             try {
                 log.debug("Checking for " + vLocator + " object on page");
                 Thread.sleep(1000);
@@ -83,7 +84,8 @@ public abstract class SeleniumCore {
                 log.error("Error waiting for object " + vLocator);
                 ex.printStackTrace();
             }
-        } while (counter < 2);
+            counter++;
+        } while (counter < MAX_TRIES);
         log.error("Object " + vLocator + " not found on " + getURL() + " page");
         return false;
     }
@@ -99,6 +101,8 @@ public abstract class SeleniumCore {
     protected abstract void searchOnPage(String searchString);
 
     protected abstract void goToHomePage();
+
+    protected abstract void login() throws UnsupportedEncodingException;
 
     public void closeDriverConnection() {
         log.warn("Warning ! Closing driver's connection...");
