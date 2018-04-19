@@ -8,7 +8,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 
-import java.net.MalformedURLException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 
 
@@ -41,6 +42,12 @@ public class GoogleCore extends SeleniumCore {
     @Override
     public void goToHomePage() {
         goToPage(HOME_PAGE);
+    }
+
+    @Override
+    protected void login() throws UnsupportedEncodingException {
+        log.info("Loging to google services");
+        log.warn(URLDecoder.decode("String to decode", "UTF-8"));
     }
 
     public int checkIfWordExists() {

@@ -10,8 +10,6 @@ import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
-
 
 /**
  * @author krbk
@@ -20,7 +18,7 @@ public class Main {
 
     private static final Logger log = Logger.getLogger(Main.class);
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         try {
             Config.addPropertiesConfigurator(new FileInputStream("src\\main\\resources\\log4j.properties"));
             Config.addProperties(new FileInputStream("src\\main\\resources\\config.properties"));
@@ -36,6 +34,7 @@ public class Main {
         }
         TestNGExecutor testNGExecutor = new TestNGExecutor();
         testNGExecutor.runTests();
+
     }
 
     private static void runDockerCompose(int servicesToStart) {
@@ -59,8 +58,10 @@ public class Main {
                 }
             }
         } catch (Exception ex) {
+            System.out.println("Docker initialization failed");
             ex.printStackTrace();
         }
+
     }
 
     private static int checkNumberOfServicesToRunInDocker() throws FileNotFoundException {
