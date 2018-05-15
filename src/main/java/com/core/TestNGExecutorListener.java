@@ -89,7 +89,11 @@ public class TestNGExecutorListener implements ITestListener {
             Process p = pb.start();
             p.waitFor();
             p.destroy();
+<<<<<<< HEAD
             log.info("Docker services are dead.");
+=======
+            log.info("Docker services dead.");
+>>>>>>> ba4c5ba85c70b981dda855d34fe0ac5d91ead1a0
         } catch (IOException ex) {
             ex.printStackTrace();
         } catch (Exception ex) {
