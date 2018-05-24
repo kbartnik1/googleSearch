@@ -85,11 +85,11 @@ public class TestNGExecutorListener implements ITestListener {
     private void dockerComposeDown(){
         try {
             log.info("Shutting down docker services.");
-            ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/c", "docker-compose -f " + System.getProperty("docker.yml.file.location") + System.getProperty("docker.yml.file.name") +" down");
+            ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/c", "docker-compose -f " + System.getProperty("docker.yml.file.location") +"\\\\" +  System.getProperty("docker.yml.file.name") +" down");
             Process p = pb.start();
             p.waitFor();
             p.destroy();
-            log.info("Docker services dead.");
+            log.info("Docker services have been stopped and removed.");
         } catch (IOException ex) {
             ex.printStackTrace();
         } catch (Exception ex) {
