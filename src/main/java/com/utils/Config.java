@@ -16,7 +16,7 @@ public class Config {
     }
 
     public void basicConfig() {
-        log.debug("Executing basic configuration.");
+        log.debug("Configuration started.");
         addConfigFromFiles();
     }
 

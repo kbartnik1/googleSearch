@@ -5,12 +5,12 @@
  */
 package com.core;
 
+import com.utils.Docker;
 import org.apache.log4j.Logger;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,31 +69,19 @@ public class TestNGExecutorListener implements ITestListener {
 
     public void afterClass() {
         log.info("Tests concluded. Results:\n" +
-                "Tests executed: " + executed +" "+ getResultsFromList(executedTestList)+"\n"+
-                "Passed tests: " + passed+" "+ getResultsFromList(passedTestList)+"\n"+
-                "Skipped tests: " + skipped +" "+ getResultsFromList(skippedTestList)+"\n"+
-                "Failed tests: " + failed+" "+ getResultsFromList(failedTestList));
-        dockerComposeDown();
+                "Tests executed: " + executed + " " + getResultsFromList(executedTestList) + "\n" +
+                "Passed tests: " + passed + " " + getResultsFromList(passedTestList) + "\n" +
+                "Skipped tests: " + skipped + " " + getResultsFromList(skippedTestList) + "\n" +
+                "Failed tests: " + failed + " " + getResultsFromList(failedTestList));
+        if (System.getProperty("mode.remote").equals("true"))
+            Docker.dockerComposeDown();
     }
+
     private String getResultsFromList(List<String> a) {
         String tmp = "";
         for (String s : a) {
             tmp += s + " ";
         }
         return tmp;
-    }
-    private void dockerComposeDown(){
-        try {
-            log.info("Shutting down docker services.");
-            ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/c", "docker-compose -f " + System.getProperty("docker.yml.file.location") +"\\\\" +  System.getProperty("docker.yml.file.name") +" down");
-            Process p = pb.start();
-            p.waitFor();
-            p.destroy();
-            log.info("Docker services have been stopped and removed.");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
     }
 }

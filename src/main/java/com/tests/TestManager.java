@@ -9,10 +9,10 @@ import java.net.MalformedURLException;
 
 public class TestManager {
     Korpolaki korpolaki = new Korpolaki();
-    ApiTests apiTests = new ApiTests();
+    ApiTests apiTests = new ApiTests(); // does not use driver so it is not required to destroy it afterwards
 
     @Test
-    public void checkIfGoogleFindsAWord() {
+    public void checkIfGoogleFindsNotExistingAWord() {
         int r = korpolaki.checkIfWordExistsInGoogle("qetjhquhetuiqheiuthqiuehtiu");
         Assert.assertTrue(r == 1);
     }
@@ -24,13 +24,13 @@ public class TestManager {
 
 
     @Test
-    public void checkIfMSISDNIs9CharsLong() {
+    public void checkGoogleForPolskiRap() {
         int r = korpolaki.checkIfWordExistsInGoogle("Polski rap");
         Assert.assertTrue(r == 1);
     }
 
     @Test
-    public void checkIfBrowserOpens6times() {
+    public void simpleNumberCheck() {
         Assert.assertTrue(apiTests.checkMSISDNLength(), " it really is 9 chars long");
     }
 }
