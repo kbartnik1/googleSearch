@@ -14,7 +14,6 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -102,7 +101,7 @@ public abstract class SeleniumCore {
 
     protected abstract void goToHomePage();
 
-    protected abstract void login() throws UnsupportedEncodingException;
+    protected abstract void login();
 
     public void closeDriverConnection() {
         log.warn("Warning ! Closing driver's connection...");

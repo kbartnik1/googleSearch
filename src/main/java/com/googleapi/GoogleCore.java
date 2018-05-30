@@ -45,9 +45,9 @@ public class GoogleCore extends SeleniumCore {
     }
 
     @Override
-    protected void login() throws UnsupportedEncodingException {
+    protected void login(){
         log.info("Loging to google services");
-        log.warn(URLDecoder.decode("String to decode", "UTF-8"));
+        log.warn("Not yet supported.");
     }
 
     public int checkIfWordExists() {

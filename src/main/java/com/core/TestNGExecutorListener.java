@@ -11,6 +11,7 @@ import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,25 +85,4 @@ public class TestNGExecutorListener implements ITestListener {
         }
         return tmp;
     }
-<<<<<<< HEAD
-    private void dockerComposeDown(){
-        try {
-            log.info("Shutting down docker services.");
-            ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/c", "docker-compose -f " + System.getProperty("docker.yml.file.location") + System.getProperty("docker.yml.file.name") +" down");
-            Process p = pb.start();
-            p.waitFor();
-            p.destroy();
-<<<<<<< HEAD
-            log.info("Docker services are dead.");
-=======
-            log.info("Docker services dead.");
->>>>>>> ba4c5ba85c70b981dda855d34fe0ac5d91ead1a0
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-=======
->>>>>>> 5d6c52c8ecfc6ecb994927b8b1ca05a390bc8daf
 }
