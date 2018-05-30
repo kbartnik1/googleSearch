@@ -13,7 +13,7 @@ public class Docker {
         try {
             log.info("Starting docker services...");
             int quitCondition = 0;
-            ProcessBuilder pb = new ProcessBuilder("cmd.exe", "-a", "/c", "mkdir ~\\docker & docker-compose -f " +
+            ProcessBuilder pb = new ProcessBuilder("cmd.exe", "-a", "/c", "mkdir "+ System.getProperty("user.home") + "\\docker" +" & docker-compose -f " +
                     System.getProperty("docker.yml.file.location") +
                     "\\\\" +
                     System.getProperty("docker.yml.file.name") +

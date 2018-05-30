@@ -15,6 +15,7 @@ import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,8 +28,8 @@ public class TestNGExecutor {
 
     private static final Logger log = Logger.getLogger(TestNGExecutor.class);
     private TestNGExecutorListener listener = new TestNGExecutorListener();
-    private List<List<String>> methodNames = new ArrayList<List<String>>();
-    private List<String> classCollection = new ArrayList<>();
+    private List<List<String>> listOfAllClassesAndTheirTestMethods = new ArrayList<List<String>>();
+    private List<String> classNamesWithTests = new ArrayList<>();
     List<TestNG> testNGInstances = new ArrayList<>();
 
     public TestNGExecutor() {
@@ -37,48 +38,31 @@ public class TestNGExecutor {
 
     }
 
-    private XmlSuite createXMLSuite(int testIndex, String className, List<String> methodZ) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+    private XmlSuite createXMLSuite(String className, List<String> methodZ) throws ClassNotFoundException {
         XmlSuite xmlSuite = new XmlSuite();
-        System.out.println("debug. List of methods passed to createXMLSuite = "+methodZ);
-            for (int i = 0; i < methodZ.size(); i++) {
-                XmlTest xmlTest = new XmlTest(xmlSuite);
-                xmlSuite.setName("Suite " + testIndex);
-                xmlSuite.setParallel(XmlSuite.ParallelMode.CLASSES);
-                xmlSuite.setVerbose(1);
-                xmlTest.setName("Test " + testIndex);
-                xmlTest.setPreserveOrder(true);
-                XmlClass xmlClass = new XmlClass(Class.forName(className));    // ?
-                List<XmlInclude> includeMethods = new ArrayList<>();
-                includeMethods.add(new XmlInclude(methodZ.get(testIndex))); // ?
-                xmlClass.setIncludedMethods(includeMethods);
-                List<XmlClass> classList = new ArrayList<>();
-                classList.add(xmlClass);
-                xmlTest.setXmlClasses(classList);
-                /*methodNames.remove(testIndex);*/
-            }
-
+        for (int i = 0; i < methodZ.size(); i++) {
+            XmlTest xmlTest = new XmlTest(xmlSuite);
+            xmlSuite.setName("Suite " + className);
+            xmlSuite.setParallel(XmlSuite.ParallelMode.TESTS);
+            xmlSuite.setVerbose(1);
+            xmlTest.setName("Test " + i);
+            xmlTest.setPreserveOrder(true);
+            XmlClass xmlClass = new XmlClass(Class.forName(className));
+            xmlClass.setIncludedMethods(Arrays.asList(new XmlInclude(methodZ.get(i))));
+            xmlTest.setXmlClasses(Arrays.asList(xmlClass));
+        }
         return xmlSuite;
     }
 
-    void collectTests() throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+    void collectTests() throws ClassNotFoundException {
         TestNG testNG;
         List<List<XmlSuite>> listOfSuiteList = new ArrayList<>();
-        List<XmlSuite> suiteList;
-        /*while (methodNames.size() != 0) {*/
-        for (int i = 0; i < classCollection.size(); i ++){
-            System.out.println(classCollection.get(i) +  " exploring this class:");
-            for(int j = 0; j < methodNames.get(i).size(); j++){
-                    /*for(int)*/
-                    suiteList = new ArrayList<>();
-                    suiteList.add(createXMLSuite(j, classCollection.get(i), methodNames.get(i)));
-                    listOfSuiteList.add(suiteList);
-                    /*methodNames.get(0).remove(0);*/
-                }
+        for (int i = 0; i < classNamesWithTests.size(); i++) {
+            listOfSuiteList.add(Arrays.asList(createXMLSuite(classNamesWithTests.get(i), listOfAllClassesAndTheirTestMethods.get(i))));
         }
-        for(int i = 0; i < listOfSuiteList.size(); i++){
-            System.out.println(listOfSuiteList.get(0)+ " ??????????????");
+        for (int i = 0; i < listOfSuiteList.size(); i++) {
             testNG = new TestNG();
-            testNG.setXmlSuites(listOfSuiteList.get(0));
+            testNG.setXmlSuites(listOfSuiteList.get(i));
             testNG.addListener(listener);
             testNGInstances.add(testNG);
         }
@@ -87,7 +71,6 @@ public class TestNGExecutor {
     public void runTests() {
         try {
             collectTests();
-            printImportantData();
             ExecutorService executor = Executors.newFixedThreadPool(4);
             for (TestNG ngInstance : testNGInstances) {
                 executor.submit(() -> {
@@ -104,13 +87,11 @@ public class TestNGExecutor {
 
     private List<List<String>> getTestMethodNamesFromAllClassses() {
         try {
-            for (int j = 0; j < classCollection.size(); j++) {
+            for (int j = 0; j < classNamesWithTests.size(); j++) {
                 List<String> listOfMethodsInSpecificClass = new ArrayList<>();
-                Class c = Class.forName(classCollection.get(j));
-                Method[] m = c.getDeclaredMethods();
+                Method[] m = Class.forName(classNamesWithTests.get(j)).getDeclaredMethods();
                 for (int i = 0; i < m.length; i++) {
                     if (m[i].isAnnotationPresent(org.testng.annotations.Test.class)) {
-                        /*System.out.println(m[i]);*/
                         listOfMethodsInSpecificClass.add(m[i].toString());
                     }
                 }
@@ -118,27 +99,19 @@ public class TestNGExecutor {
                     String[] tmp = listOfMethodsInSpecificClass.get(i).split("\\.");
                     listOfMethodsInSpecificClass.set(i, tmp[tmp.length - 1].substring(0, tmp[tmp.length - 1].length() - 2));
                 }
-                methodNames.add(listOfMethodsInSpecificClass);
+                if (!listOfMethodsInSpecificClass.isEmpty())
+                    listOfAllClassesAndTheirTestMethods.add(listOfMethodsInSpecificClass);
             }
-            printImportantData();
         } catch (Exception e) {
             System.out.println(e);
         }
-        return methodNames;
+        return listOfAllClassesAndTheirTestMethods;
     }
 
     private void getManagerClassNames() {
         ClassCollector cc = new ClassCollector();
-        classCollection = cc.find(System.getProperty("tests.manager.classses.package"));
-        System.out.println(classCollection);
+        classNamesWithTests = cc.find(System.getProperty("tests.manager.classses.package"));
+        System.out.println(classNamesWithTests);
     }
 
-    private void printImportantData() {
-        System.out.println("All collected methods\n==================");
-        for (int i = 0; i < methodNames.size(); i++) {
-            for (int j = 0; j < methodNames.get(i).size(); j++) {
-                System.out.println(methodNames.get(i).get(j));
-            }
-        }
-    }
 }

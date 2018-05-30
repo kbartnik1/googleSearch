@@ -1,6 +1,6 @@
-/target/*
+﻿/target/*
 /test-output/*
 /logs/*
 .log
 .idea/
-
+*.iml
