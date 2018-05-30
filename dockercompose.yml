@@ -1,44 +1,47 @@
 version: '3'
 services:
   firefox_1:
-    image: selenium/node-firefox-debug
+    image: selenium/node-firefox    
     ports:
     - "5901:5900"
     volumes:
-    - C:/docker:/dev/shm
+    - $USERPROFILE/docker:/dev/shm
     depends_on:
       - hub
     environment:
       HUB_HOST: hub
   firefox_2:
-    image: selenium/node-firefox-debug
+    image: selenium/node-firefox
     ports:
     - "5902:5900"    
     volumes:
-    - C:/docker:/dev/shm
+    - $USERPROFILE/docker:/dev/shm
     depends_on:
       - hub
     environment:
       HUB_HOST: hub
   firefox_3:
-    image: selenium/node-firefox-debug
+    image: selenium/node-firefox
     ports:
     - "5903:5900"    
     depends_on:
       - hub
     volumes:
-    - C:/docker:/dev/shm
+    - $USERPROFILE/docker:/dev/shm
     environment:
       HUB_HOST: hub
   hub:
     image: selenium/hub
     ports:
       - "4444:4444"
-  mockserver:
-    image: kbartnik1/mock
-    environment:
-    - PROXY_PORT=2023
-    - SERVER_PORT=2033
-    ports:
-    - "2023:2023"
-    - "2033:2033"
+#  mockserver:
+#    build:
+#      context: .
+#      dockerfile: dockerfile_create_mock_image
+#    environment:
+#    - PROXY_PORT=2023
+#    - SERVER_PORT=2033
+#    - APPLICATION_JAR=target/testingcup.jar
+#    ports:
+#    - "2023:2023"
+#    - "2033:2033"
