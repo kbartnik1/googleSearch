@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.tests.implementation;
+package com.tests.aggregation;
 
 import com.generators.NumberGenerators;
 import org.apache.log4j.Logger;

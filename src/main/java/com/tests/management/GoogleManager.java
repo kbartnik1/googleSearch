@@ -1,6 +1,6 @@
-package com.tests.managers;
+package com.tests.management;
 
-import com.tests.implementation.Korpolaki;
+import com.tests.aggregation.Korpolaki;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
@@ -12,7 +12,7 @@ public class GoogleManager {
     @Test
     public void checkIfGoogleFindsNotExistingAWord() {
         int r = korpolaki.checkIfWordExistsInGoogle("qetjhquhetuiqheiuthqiuehtiu");
-        Assert.assertTrue(r == 1);
+        Assert.assertTrue(r == -1);
     }
 
     @Test

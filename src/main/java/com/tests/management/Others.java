@@ -1,6 +1,6 @@
-package com.tests.managers;
+package com.tests.management;
 
-import com.tests.implementation.ApiTests;
+import com.tests.aggregation.ApiTests;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

@@ -13,16 +13,10 @@ import java.net.URLDecoder;
 import java.util.List;
 
 
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * @author krbk
  */
+
 public class GoogleCore extends SeleniumCore {
     private final By GOOGLE_SEARCH_BOX = By.cssSelector("#lst-ib");
     private final By NO_SEARCH_RESULTS_AT_ALL = By.xpath(".//*[@id='topstuff']/*[contains(.,'Podana fraza')]");
@@ -52,10 +46,10 @@ public class GoogleCore extends SeleniumCore {
 
     public int checkIfWordExists() {
         if (checkIfAndWaitUntilElementExists(GOOGLE_SEARCH_INFO_ABOUT_SEARCH)) {
-            List<WebElement> lista = getAllObjectsStartingFromRoot(GOOGLE_SEARCH_INFO_STRING);
-            for (WebElement e : lista) {
+            List<WebElement> pageElements = getAllObjectsStartingFromRoot(GOOGLE_SEARCH_INFO_STRING);
+            for (WebElement element : pageElements) {
                 for (GoogleErrorDictionary ged : GoogleErrorDictionary.values()) {
-                    if (e.getText().contains(ged.getTextError())) {
+                    if (element.getText().contains(ged.getTextError())) {
                         log.debug("Not good.");
                         log.warn("Word not found, but probably you've misspelled it. Google tries to help You !");
                         return 0;

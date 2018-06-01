@@ -111,7 +111,6 @@ public class TestNGExecutor {
     private void getManagerClassNames() {
         ClassCollector cc = new ClassCollector();
         classNamesWithTests = cc.find(System.getProperty("tests.manager.classses.package"));
-        System.out.println(classNamesWithTests);
     }
 
 }

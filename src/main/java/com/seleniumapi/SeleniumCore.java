@@ -52,9 +52,9 @@ public abstract class SeleniumCore {
         driver.get(url);
     }
 
-    public String getText(String vLocator) {
-        String text = driver.findElement(By.cssSelector(vLocator)).getText();
-        log.info(vLocator + "'s text is following: " + text);
+    public String getText(String cssSelectorLocator) {
+        String text = driver.findElement(By.cssSelector(cssSelectorLocator)).getText();
+        log.info(cssSelectorLocator + "'s text is following: " + text);
         return text;
     }
 

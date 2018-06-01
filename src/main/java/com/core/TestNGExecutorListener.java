@@ -78,11 +78,11 @@ public class TestNGExecutorListener implements ITestListener {
             Docker.dockerComposeDown();
     }
 
-    private String getResultsFromList(List<String> a) {
-        String tmp = "";
-        for (String s : a) {
-            tmp += s + " ";
+    private String getResultsFromList(List<String> listOfTests) {
+        String returnString = "";
+        for (String singleTest : listOfTests) {
+            returnString += singleTest + " ";
         }
-        return tmp;
+        return returnString;
     }
 }

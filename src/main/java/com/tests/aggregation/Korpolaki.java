@@ -1,7 +1,6 @@
-package com.tests.implementation;
+package com.tests.aggregation;
 
 import com.googleapi.GoogleCore;
-import org.apache.log4j.Logger;
 
 
 public class Korpolaki extends GoogleCore {
