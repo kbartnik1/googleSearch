@@ -57,6 +57,8 @@ public class TestNGExecutor {
     void collectTests() throws ClassNotFoundException {
         TestNG testNG;
         List<List<XmlSuite>> listOfSuiteList = new ArrayList<>();
+        if(classNamesWithTests.size() == 0)
+            return;
         for (int i = 0; i < classNamesWithTests.size(); i++) {
             listOfSuiteList.add(Arrays.asList(createXMLSuite(classNamesWithTests.get(i), listOfAllClassesAndTheirTestMethods.get(i))));
         }

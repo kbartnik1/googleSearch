@@ -6,15 +6,14 @@
 package com.seleniumapi;
 
 import org.apache.log4j.Logger;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -47,29 +46,40 @@ public abstract class SeleniumCore {
         }
     }
 
-    public void goToPage(String url) {
+    public abstract void login() throws InvalidKeySpecException, NoSuchAlgorithmException;
+
+    public abstract void logout();
+
+    public abstract void searchOnPage(String searchString);
+
+    public abstract void goToHomePage();
+
+    protected void goToPage(String url) {
         log.info("Going to page: " + url);
         driver.get(url);
     }
 
-    public String getText(String cssSelectorLocator) {
-        String text = driver.findElement(By.cssSelector(cssSelectorLocator)).getText();
-        log.info(cssSelectorLocator + "'s text is following: " + text);
+    protected String getText(By vLocator) {
+        checkIfAndWaitUntilElementExists(vLocator);
+        String text = driver.findElement(vLocator).getText();
+        log.info(vLocator + "'s text is following: " + text);
         return text;
     }
 
-    public void sendText(By vLocator, String text) {
+    protected void sendText(By vLocator, String text) {
         log.info("Sending " + text + " to object " + vLocator.toString());
+        checkIfAndWaitUntilElementExists(vLocator);
         driver.findElement(vLocator).clear();
         driver.findElement(vLocator).sendKeys(text);
     }
 
-    public void sendKey(By webElement, Keys k) {
-        log.info("Sending " + k.name() + " key to " + webElement.toString());
-        driver.findElement(webElement).sendKeys(k);
+    protected void sendKey(By vLocator, Keys k) {
+        log.info("Sending " + k.name() + " key to " + vLocator.toString());
+        checkIfAndWaitUntilElementExists(vLocator);
+        driver.findElement(vLocator).sendKeys(k);
     }
 
-    public boolean checkIfAndWaitUntilElementExists(By vLocator) {
+    protected boolean checkIfAndWaitUntilElementExists(By vLocator) {
         counter = 0;
         do {
             try {
@@ -89,22 +99,28 @@ public abstract class SeleniumCore {
         return false;
     }
 
-    public String getURL() {
+    protected String getURL() {
         return driver.getCurrentUrl();
     }
 
-    public List<WebElement> getAllObjectsStartingFromRoot(String vLocator) {
+    protected List<WebElement> getAllObjectsStartingFromRoot(String vLocator) {
         return driver.findElements(By.xpath(vLocator));
     }
-
-    protected abstract void searchOnPage(String searchString);
-
-    protected abstract void goToHomePage();
-
-    protected abstract void login();
 
     public void closeDriverConnection() {
         log.warn("Warning ! Closing driver's connection...");
         driver.quit();
     }
+
+    protected void scrollPageByXPixels(int pixelsToScroll) {
+        log.info("Scrolling the page by " + pixelsToScroll + " pixels.");
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("window.scrollBy(0," + pixelsToScroll + ")");
+    }
+
+    protected void sendKeysToInputAndHitReturn(By vLocator, String text){
+        sendText(vLocator, text);
+        sendKey(vLocator, Keys.RETURN);
+    }
+
 }

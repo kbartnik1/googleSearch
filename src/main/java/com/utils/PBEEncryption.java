@@ -24,9 +24,9 @@ public class PBEEncryption {
     public PBEEncryption(int iterations) {
         // Generate a random salt
         SecureRandom sr = new SecureRandom();
-        byte[] randomSalt = new byte[HASH_BYTES];
-        sr.nextBytes(randomSalt);
-        SALT=randomSalt;
+        byte[] salt = new byte[HASH_BYTES];
+        sr.nextBytes(salt);
+        SALT=salt;
         PBKDF2_ITERATIONS = iterations;
     }
 

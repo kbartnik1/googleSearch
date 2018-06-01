@@ -8,8 +8,11 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 
+import javax.swing.*;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 
 
@@ -24,24 +27,31 @@ public class GoogleCore extends SeleniumCore {
     private final String GOOGLE_SEARCH_INFO_STRING = ".//p[@id='fprs']/*";
     private final String HOME_PAGE = "https://www.google.com";
 
+
     private static final Logger log = Logger.getLogger(GoogleCore.class);
+
+
+    @Override
+    public void login() throws InvalidKeySpecException, NoSuchAlgorithmException {
+        log.info("Loging to google HOMEPAGE");
+        throw new UnsupportedOperationException("Not yet supported.");
+
+    }
+
+    @Override
+    public void logout() {
+        log.info("Loging off from google HOMEPAGE");
+        throw new UnsupportedOperationException("Not yet supported.");
+    }
 
     @Override
     public void searchOnPage(String searchString) {
-        sendText(GOOGLE_SEARCH_BOX, searchString);
-        sendKey(GOOGLE_SEARCH_BOX, Keys.RETURN);
+        super.sendKeysToInputAndHitReturn(GOOGLE_SEARCH_BOX, searchString);
     }
-
 
     @Override
     public void goToHomePage() {
         goToPage(HOME_PAGE);
-    }
-
-    @Override
-    protected void login(){
-        log.info("Loging to google services");
-        log.warn("Not yet supported.");
     }
 
     public int checkIfWordExists() {
@@ -51,7 +61,7 @@ public class GoogleCore extends SeleniumCore {
                 for (GoogleErrorDictionary ged : GoogleErrorDictionary.values()) {
                     if (element.getText().contains(ged.getTextError())) {
                         log.debug("Not good.");
-                        log.warn("Word not found, but probably you've misspelled it. Google tries to help You !");
+                        log.warn("Word not found, but probably you've misspelled it. GoogleHome tries to help You !");
                         return 0;
                     }
                 }
