@@ -11,7 +11,7 @@ public class Gmail {
     private static final Logger log = Logger.getLogger(Gmail.class);
     GoogleMail gm = new GoogleMail();
 
-/*    @Test
+    @Test
     public void sendMailFromGoogleMail() {
         try {
             gm.loginToGoogle();
@@ -19,18 +19,15 @@ public class Gmail {
             gm.logoutFromGoogle();
         } catch (Exception e) {
            log.error(e);
-            Assert.fail();
+           Assert.fail();
         }
-    }*/
-
-
+    }
     @Test
     public void readMailFromGoogleMail() {
         try {
             gm.loginToGoogle();
-            do {
-                gm.readMailFromGoogleMail();
-            }while(true);
+            gm.readMailFromGoogleMail();
+            gm.logoutFromGoogle();
         } catch (Exception e) {
             log.error(e);
             Assert.fail();

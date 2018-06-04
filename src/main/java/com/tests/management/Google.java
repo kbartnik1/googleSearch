@@ -1,12 +1,15 @@
 package com.tests.management;
 
 import com.tests.aggregation.GoogleHome;
+import org.apache.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class Google {
-/*
+
     GoogleHome google = new GoogleHome();
+    private static final Logger log = Logger.getLogger(Google.class);
+
     @Test
     public void checkIfGoogleFindsNotExistingAWord() {
         try {
@@ -27,5 +30,5 @@ public class Google {
             log.error(e);
             Assert.fail();
         }
-    }*/
+    }
 }
