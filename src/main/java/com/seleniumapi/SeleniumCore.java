@@ -87,6 +87,8 @@ public abstract class SeleniumCore {
                 Thread.sleep(1000);
                 if (!driver.findElements(vLocator).isEmpty()) {
                     log.info("Object " + vLocator + " is present on page");
+                    WebElement e = driver.findElement(vLocator);
+                    scrollToCenterOfObject(e);
                     return true;
                 }
             } catch (InterruptedException ex) {
@@ -118,9 +120,19 @@ public abstract class SeleniumCore {
         js.executeScript("window.scrollBy(0," + pixelsToScroll + ")");
     }
 
-    protected void sendKeysToInputAndHitReturn(By vLocator, String text){
+    protected void scrollToCenterOfObject(WebElement ele){
+        log.debug("Scrolling the page to make sure it is visible on the page.");
+        ((JavascriptExecutor)driver).executeScript("window.scrollTo(" + ele.getLocation().x + "," + ele.getLocation().y + ")");
+    }
+
+    protected void sendKeysToInputAndHitReturn(By vLocator, String text) {
         sendText(vLocator, text);
         sendKey(vLocator, Keys.RETURN);
     }
 
+    protected void waitAndClickOnElement(By vLocator) {
+        log.info("Clicking on " + vLocator + " webelement");
+        checkIfAndWaitUntilElementExists(vLocator);
+        driver.findElement(vLocator).click();
+    }
 }

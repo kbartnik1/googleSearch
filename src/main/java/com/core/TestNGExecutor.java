@@ -35,7 +35,6 @@ public class TestNGExecutor {
     public TestNGExecutor() {
         getManagerClassNames();
         getTestMethodNamesFromAllClassses();
-
     }
 
     private XmlSuite createXMLSuite(String className, List<String> methodZ) throws ClassNotFoundException {
@@ -57,10 +56,14 @@ public class TestNGExecutor {
     void collectTests() throws ClassNotFoundException {
         TestNG testNG;
         List<List<XmlSuite>> listOfSuiteList = new ArrayList<>();
-        if(classNamesWithTests.size() == 0)
-            return;
+        if (classNamesWithTests.size() == 0)
+            log.warn("Testing classes not found. Aborting.");
         for (int i = 0; i < classNamesWithTests.size(); i++) {
-            listOfSuiteList.add(Arrays.asList(createXMLSuite(classNamesWithTests.get(i), listOfAllClassesAndTheirTestMethods.get(i))));
+            if (listOfAllClassesAndTheirTestMethods.get(i).size() == 0) {
+                log.info("Class " + classNamesWithTests.get(i) + " does not have any runnable testing methods. Skipping !");
+            } else {
+                listOfSuiteList.add(Arrays.asList(createXMLSuite(classNamesWithTests.get(i), listOfAllClassesAndTheirTestMethods.get(i))));
+            }
         }
         for (int i = 0; i < listOfSuiteList.size(); i++) {
             testNG = new TestNG();
@@ -92,17 +95,17 @@ public class TestNGExecutor {
             for (int j = 0; j < classNamesWithTests.size(); j++) {
                 List<String> listOfMethodsInSpecificClass = new ArrayList<>();
                 Method[] m = Class.forName(classNamesWithTests.get(j)).getDeclaredMethods();
-                for (int i = 0; i < m.length; i++) {
-                    if (m[i].isAnnotationPresent(org.testng.annotations.Test.class)) {
-                        listOfMethodsInSpecificClass.add(m[i].toString());
+                if (m.length == 0) {
+                    listOfAllClassesAndTheirTestMethods.add(Arrays.asList());
+                } else {
+                    for (int i = 0; i < m.length; i++) {
+                        if (m[i].isAnnotationPresent(org.testng.annotations.Test.class)) {
+                            String[] tmp = m[i].toString().split("\\.");
+                            listOfMethodsInSpecificClass.add(tmp[tmp.length - 1].substring(0, tmp[tmp.length - 1].length() - 2));
+                        }
                     }
-                }
-                for (int i = 0; i < listOfMethodsInSpecificClass.size(); i++) {
-                    String[] tmp = listOfMethodsInSpecificClass.get(i).split("\\.");
-                    listOfMethodsInSpecificClass.set(i, tmp[tmp.length - 1].substring(0, tmp[tmp.length - 1].length() - 2));
-                }
-                if (!listOfMethodsInSpecificClass.isEmpty())
                     listOfAllClassesAndTheirTestMethods.add(listOfMethodsInSpecificClass);
+                }
             }
         } catch (Exception e) {
             System.out.println(e);

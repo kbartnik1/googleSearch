@@ -9,16 +9,17 @@ public class GoogleMail {
     GmailCore gmail = new GmailCore();
 
     public void sendMailFromGoogleMail() throws InvalidKeySpecException, NoSuchAlgorithmException {
-        gmail.goToHomePage();
-        gmail.login();
-        gmail.sendEmailMessage("hate776@gmail.com", "test");
-        gmail.logout();
+        gmail.sendEmailMessage("hate776@gmail.com","topic", "test");
     }
 
     public void readMailFromGoogleMail() throws InvalidKeySpecException, NoSuchAlgorithmException {
+        gmail.readMail();
+    }
+    public void loginToGoogle() throws InvalidKeySpecException, NoSuchAlgorithmException {
         gmail.goToHomePage();
         gmail.login();
-        gmail.readMail();
+    }
+    public void logoutFromGoogle(){
         gmail.logout();
     }
 }

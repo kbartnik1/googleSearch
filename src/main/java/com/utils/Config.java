@@ -3,12 +3,14 @@ package com.utils;
 import org.apache.log4j.Logger;
 
 import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
 
 public class Config {
 
-    private static final Logger log = Logger.getLogger(Config.class);
+    private final Logger log = Logger.getLogger(Config.class);
 
 
     public Config() {

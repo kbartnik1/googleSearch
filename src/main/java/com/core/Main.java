@@ -12,6 +12,8 @@ import org.apache.log4j.Logger;
 import java.io.FileNotFoundException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static com.utils.Docker.checkNumberOfServicesToRunInDocker;
 import static com.utils.Docker.runDockerCompose;
@@ -21,8 +23,11 @@ import static com.utils.Docker.runDockerCompose;
  */
 public class Main {
 
-    private static final Logger log = Logger.getLogger(Main.class);
+    static{
+        System.setProperty("log.Date", LocalDateTime.now().format(DateTimeFormatter.ofPattern("uuuu-MM-dd_HH_mm")));
+    }
     private static final Config c = new Config();
+    private static final Logger log = Logger.getLogger(Main.class);
 
     public static void main(String[] args) throws InvalidKeySpecException, NoSuchAlgorithmException {
         if (System.getProperty("mode.remote").equals("true")) {
