@@ -10,6 +10,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
@@ -23,9 +24,10 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class SeleniumCore {
     private int counter = 0;
-    private final int MAX_TRIES = 2;
+    private final int MAX_TRIES = 3;
     private static final Logger log = Logger.getLogger(SeleniumCore.class);
     protected WebDriver driver;
+    protected WebDriverWait wait;
 
     public SeleniumCore() {
         try {
@@ -41,6 +43,7 @@ public abstract class SeleniumCore {
                 driver = new RemoteWebDriver(new URL(s), cap);
             }
             driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
+            wait = new WebDriverWait(driver, 60);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -86,16 +89,24 @@ public abstract class SeleniumCore {
                 log.debug("Checking for " + vLocator + " object on page");
                 Thread.sleep(1000);
                 if (!driver.findElements(vLocator).isEmpty()) {
-                    log.info("Object " + vLocator + " is present on page");
-                    WebElement e = driver.findElement(vLocator);
-                    scrollToCenterOfObject(e);
-                    return true;
-                }
+                    if (driver.findElements(vLocator).size() == 1) {
+                        WebElement element = driver.findElement(vLocator);
+                        log.info("Object " + vLocator + " is present on page");
+                        if (!isVisibleAndDisplayed(vLocator)) {
+                            counter++;
+                            continue;
+                        } else
+                            scrollToCenterOfObject(element);
+                        return true;
+                    } else {
+                        log.warn("Found more than one object");
+                        rollThroughFoundObjects(vLocator);
+                    }
+                }counter++;
             } catch (InterruptedException ex) {
                 log.error("Error waiting for object " + vLocator);
                 ex.printStackTrace();
             }
-            counter++;
         } while (counter < MAX_TRIES);
         log.error("Object " + vLocator + " not found on " + getURL() + " page");
         return false;
@@ -120,9 +131,10 @@ public abstract class SeleniumCore {
         js.executeScript("window.scrollBy(0," + pixelsToScroll + ")");
     }
 
-    protected void scrollToCenterOfObject(WebElement ele){
+    protected void scrollToCenterOfObject(WebElement ele) {
         log.debug("Scrolling the page to make sure it is visible on the page.");
-        ((JavascriptExecutor)driver).executeScript("window.scrollTo(" + ele.getLocation().x + "," + ele.getLocation().y + ")");
+        /*((JavascriptExecutor) driver).executeScript("window.scrollTo(" + ele.getLocation().x + "," + ele.getLocation().y + ")");*/
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", ele);
     }
 
     protected void sendKeysToInputAndHitReturn(By vLocator, String text) {
@@ -134,5 +146,25 @@ public abstract class SeleniumCore {
         log.info("Clicking on " + vLocator + " webelement");
         checkIfAndWaitUntilElementExists(vLocator);
         driver.findElement(vLocator).click();
+    }
+
+    protected boolean isVisibleAndDisplayed(By vLocator) {
+        log.info("Checking if element is displayed and enabled on the page.");
+        WebElement element = driver.findElement(vLocator);
+        boolean exitCondition = element.isDisplayed() && element.isEnabled();
+        log.trace("Exit condition = " + exitCondition);
+        return exitCondition;
+    }
+
+    private void rollThroughFoundObjects(By vLocator) {
+        log.trace("Trying to remove one of webelements that is invisible");
+        List<WebElement> elems = driver.findElements(vLocator);
+        for (WebElement e : elems) {
+            if (!e.isDisplayed() || !e.isEnabled()) {
+                ((JavascriptExecutor) driver).executeScript("arguments[0].parentNode.removeChild(arguments[0])", e);
+                return;
+            }
+        }
+        return;
     }
 }

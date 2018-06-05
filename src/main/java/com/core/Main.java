@@ -35,6 +35,7 @@ public class Main {
                 runDockerCompose(checkNumberOfServicesToRunInDocker());
             } catch (FileNotFoundException ex) {
                 ex.printStackTrace();
+                return;
             }
         }
         TestNGExecutor testNGExecutor = new TestNGExecutor();

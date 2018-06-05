@@ -24,6 +24,7 @@ public class GmailCore extends GoogleCore {
     private final By FIRST_UNREADEN_MAIL = By.xpath("//tbody/tr[1]/td//*//span/b[1]");
     private final By RETURN_TO_INBOX = By.xpath("//a[contains(@href,'#inbox')]/span");
     private final By GMAIL_SEARCH_INPUT = By.xpath("//tbody//input[contains(@type,'text') and contains(@aria-label,'S')]");
+    private final By AMBIGIOUS_BUTTON = By.xpath("//div[contains(@role,'button')]/content/span");
 
     private static final Logger log = Logger.getLogger(GmailCore.class);
 

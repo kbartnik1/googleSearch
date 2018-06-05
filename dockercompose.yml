@@ -1,7 +1,7 @@
 version: '3'
 services:
   firefox_1:
-    image: selenium/node-firefox    
+    image: selenium/node-firefox-debug
     ports:
     - "5901:5900"
     volumes:
@@ -11,7 +11,7 @@ services:
     environment:
       HUB_HOST: hub
   firefox_2:
-    image: selenium/node-firefox
+    image: selenium/node-firefox-debug
     ports:
     - "5902:5900"    
     volumes:
@@ -21,7 +21,7 @@ services:
     environment:
       HUB_HOST: hub
   firefox_3:
-    image: selenium/node-firefox
+    image: selenium/node-firefox-debug
     ports:
     - "5903:5900"    
     depends_on:
